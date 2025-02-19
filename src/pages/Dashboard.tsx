@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { DashboardNav } from "@/components/dashboard/DashboardNav";
 import { WelcomeSection } from "@/components/dashboard/WelcomeSection";
 import { TaskOverview } from "@/components/dashboard/TaskOverview";
+import { Leaderboard } from "@/components/dashboard/Leaderboard";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -32,8 +33,15 @@ const Dashboard = () => {
             </Button>
           </div>
           
-          <WelcomeSection />
-          <TaskOverview />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+              <WelcomeSection />
+              <TaskOverview />
+            </div>
+            <div className="lg:col-span-1">
+              <Leaderboard />
+            </div>
+          </div>
         </div>
       </main>
     </div>
