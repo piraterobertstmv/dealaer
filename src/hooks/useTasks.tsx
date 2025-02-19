@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useAuth } from "@/lib/auth";
 
 export type Task = {
   id: string;
@@ -14,6 +15,7 @@ export type Task = {
 };
 
 export const useTasks = () => {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
 
   const { data: tasks = [], isLoading } = useQuery({
@@ -37,7 +39,7 @@ export const useTasks = () => {
     mutationFn: async (newTask: Omit<Task, "id" | "created_at" | "updated_at">) => {
       const { data, error } = await supabase
         .from("tasks")
-        .insert([newTask])
+        .insert([{ ...newTask, user_id: user?.id }])
         .select()
         .single();
 
