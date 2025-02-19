@@ -8,7 +8,6 @@ export type Task = {
   id: string;
   title: string;
   description?: string;
-  type: "must-do" | "optional";
   completed: boolean;
   created_at: string;
   updated_at: string;
@@ -36,7 +35,7 @@ export const useTasks = () => {
   });
 
   const createTask = useMutation({
-    mutationFn: async (newTask: Omit<Task, "id" | "created_at" | "updated_at">) => {
+    mutationFn: async (newTask: Pick<Task, "title" | "description">) => {
       const { data, error } = await supabase
         .from("tasks")
         .insert([{ ...newTask, user_id: user?.id }])
@@ -84,7 +83,7 @@ export const useTasks = () => {
       const { data, error } = await supabase
         .from("tasks")
         .update({ completed: !task.completed })
-        .eq("id", taskId)
+        .eq("id", id)
         .select()
         .single();
 
@@ -93,31 +92,12 @@ export const useTasks = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      toast.success("Task status updated");
     },
     onError: () => {
-      toast.error("Failed to update task");
+      toast.error("Failed to update task status");
     },
   });
-
-  const stats = {
-    totalTasks: tasks.length,
-    completedTasks: tasks.filter(task => task.completed).length,
-    mustDoTasks: tasks.filter(task => task.type === "must-do").length,
-    completedMustDoTasks: tasks.filter(task => task.type === "must-do" && task.completed).length,
-    weeklyStats: Array.from({ length: 7 }, (_, i) => {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const dayTasks = tasks.filter(task => {
-        const taskDate = new Date(task.created_at);
-        return taskDate.toDateString() === date.toDateString();
-      });
-      return {
-        date: date.toISOString(),
-        completed: dayTasks.filter(task => task.completed).length,
-        total: dayTasks.length,
-      };
-    }).reverse(),
-  };
 
   return {
     tasks,
@@ -125,6 +105,5 @@ export const useTasks = () => {
     createTask,
     updateTask,
     toggleTask,
-    stats,
   };
 };
