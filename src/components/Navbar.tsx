@@ -2,9 +2,12 @@
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/lib/auth";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user } = useAuth();
 
   return (
     <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-100">
@@ -22,9 +25,19 @@ const Navbar = () => {
             <a href="#how-it-works" className="text-gray-600 hover:text-dealer-primary transition-colors">
               How It Works
             </a>
-            <Button className="bg-dealer-primary hover:bg-dealer-primary/90 text-white">
-              Get Started
-            </Button>
+            {user ? (
+              <Link to="/dashboard">
+                <Button className="bg-dealer-primary hover:bg-dealer-primary/90 text-white">
+                  Dashboard
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/auth">
+                <Button className="bg-dealer-primary hover:bg-dealer-primary/90 text-white">
+                  Get Started
+                </Button>
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -54,9 +67,19 @@ const Navbar = () => {
               >
                 How It Works
               </a>
-              <Button className="bg-dealer-primary hover:bg-dealer-primary/90 text-white w-full">
-                Get Started
-              </Button>
+              {user ? (
+                <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
+                  <Button className="bg-dealer-primary hover:bg-dealer-primary/90 text-white w-full">
+                    Dashboard
+                  </Button>
+                </Link>
+              ) : (
+                <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
+                  <Button className="bg-dealer-primary hover:bg-dealer-primary/90 text-white w-full">
+                    Get Started
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         )}
