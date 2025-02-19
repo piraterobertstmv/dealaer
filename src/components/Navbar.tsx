@@ -22,9 +22,6 @@ const Navbar = () => {
             <a href="#how-it-works" className="text-gray-600 hover:text-dealer-primary transition-colors">
               How It Works
             </a>
-            <a href="#lovable" className="text-gray-600 hover:text-dealer-primary transition-colors">
-              Built with Lovable
-            </a>
             <Button className="bg-dealer-primary hover:bg-dealer-primary/90 text-white">
               Get Started
             </Button>
@@ -56,13 +53,6 @@ const Navbar = () => {
                 onClick={() => setIsMenuOpen(false)}
               >
                 How It Works
-              </a>
-              <a
-                href="#lovable"
-                className="text-gray-600 hover:text-dealer-primary transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Built with Lovable
               </a>
               <Button className="bg-dealer-primary hover:bg-dealer-primary/90 text-white w-full">
                 Get Started
