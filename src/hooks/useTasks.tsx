@@ -3,14 +3,17 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
+import { startOfWeek, addDays, format } from "date-fns";
 
 export type Task = {
   id: string;
   title: string;
   description?: string;
   completed: boolean;
+  type: string;
   created_at: string;
   updated_at: string;
+  user_id: string;
 };
 
 export const useTasks = () => {
@@ -38,7 +41,11 @@ export const useTasks = () => {
     mutationFn: async (newTask: Pick<Task, "title" | "description">) => {
       const { data, error } = await supabase
         .from("tasks")
-        .insert([{ ...newTask, user_id: user?.id }])
+        .insert([{ 
+          ...newTask, 
+          user_id: user?.id,
+          type: "must-do" // Default type for new tasks
+        }])
         .select()
         .single();
 
@@ -83,7 +90,7 @@ export const useTasks = () => {
       const { data, error } = await supabase
         .from("tasks")
         .update({ completed: !task.completed })
-        .eq("id", id)
+        .eq("id", taskId)
         .select()
         .single();
 
@@ -99,11 +106,39 @@ export const useTasks = () => {
     },
   });
 
+  // Calculate stats
+  const mustDoTasks = tasks.filter(task => task.type === "must-do");
+  const completedMustDoTasks = mustDoTasks.filter(task => task.completed);
+  
+  // Calculate weekly stats
+  const startDate = startOfWeek(new Date());
+  const weeklyStats = Array.from({ length: 7 }).map((_, index) => {
+    const date = addDays(startDate, index);
+    const dateStr = format(date, 'yyyy-MM-dd');
+    const dayTasks = tasks.filter(task => 
+      task.created_at.startsWith(dateStr)
+    );
+    return {
+      date: dateStr,
+      total: dayTasks.length,
+      completed: dayTasks.filter(task => task.completed).length
+    };
+  });
+
+  const stats = {
+    totalTasks: tasks.length,
+    completedTasks: tasks.filter(task => task.completed).length,
+    mustDoTasks: mustDoTasks.length,
+    completedMustDoTasks: completedMustDoTasks.length,
+    weeklyStats
+  };
+
   return {
     tasks,
     isLoading,
     createTask,
     updateTask,
     toggleTask,
+    stats,
   };
 };
