@@ -29,11 +29,6 @@ const Hero = () => {
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
-            <Link to="/auth">
-              <Button variant="outline" className="px-8 py-6 text-lg border-2 w-full sm:w-auto">
-                Watch Demo
-              </Button>
-            </Link>
           </div>
         </div>
       </div>
