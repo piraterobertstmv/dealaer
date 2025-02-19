@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -10,6 +11,7 @@ export type Task = {
   description?: string;
   completed: boolean;
   type: string;
+  is_daily: boolean;
   created_at: string;
   updated_at: string;
   user_id: string;
@@ -37,7 +39,7 @@ export const useTasks = () => {
   });
 
   const createTask = useMutation({
-    mutationFn: async (newTask: Pick<Task, "title" | "description" | "type">) => {
+    mutationFn: async (newTask: Pick<Task, "title" | "description" | "type" | "is_daily">) => {
       const { data, error } = await supabase
         .from("tasks")
         .insert([{ 
@@ -107,6 +109,8 @@ export const useTasks = () => {
   // Calculate stats
   const mustDoTasks = tasks.filter(task => task.type === "must-do");
   const completedMustDoTasks = mustDoTasks.filter(task => task.completed);
+  const dailyTasks = tasks.filter(task => task.is_daily);
+  const completedDailyTasks = dailyTasks.filter(task => task.completed);
   
   // Calculate weekly stats
   const startDate = startOfWeek(new Date());
@@ -128,6 +132,8 @@ export const useTasks = () => {
     completedTasks: tasks.filter(task => task.completed).length,
     mustDoTasks: mustDoTasks.length,
     completedMustDoTasks: completedMustDoTasks.length,
+    dailyTasks: dailyTasks.length,
+    completedDailyTasks: completedDailyTasks.length,
     weeklyStats
   };
 

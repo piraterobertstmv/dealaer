@@ -39,6 +39,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_daily: boolean | null
           title: string
           type: string
           updated_at: string
@@ -49,6 +50,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_daily?: boolean | null
           title: string
           type: string
           updated_at?: string
@@ -59,6 +61,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_daily?: boolean | null
           title?: string
           type?: string
           updated_at?: string
@@ -71,7 +74,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      reset_daily_tasks: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

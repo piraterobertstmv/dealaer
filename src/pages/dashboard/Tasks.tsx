@@ -1,7 +1,7 @@
 
 import { DashboardNav } from "@/components/dashboard/DashboardNav";
 import { Button } from "@/components/ui/button";
-import { Plus, Filter } from "lucide-react";
+import { Plus, Filter, RotateCcw } from "lucide-react";
 import { useTasks } from "@/hooks/useTasks";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,12 +14,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const Tasks = () => {
   const { tasks, createTask, updateTask, toggleTask, isLoading } = useTasks();
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [newTaskDescription, setNewTaskDescription] = useState("");
   const [taskType, setTaskType] = useState<string>("must-do");
+  const [isDaily, setIsDaily] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
   const handleCreateTask = async (e: React.FormEvent) => {
@@ -34,10 +36,12 @@ const Tasks = () => {
         title: newTaskTitle.trim(),
         description: newTaskDescription.trim(),
         type: taskType,
+        is_daily: isDaily,
       });
       setNewTaskTitle("");
       setNewTaskDescription("");
       setTaskType("must-do");
+      setIsDaily(false);
       setIsCreating(false);
     } catch (error) {
       console.error("Failed to create task:", error);
@@ -86,7 +90,7 @@ const Tasks = () => {
                     className="w-full"
                   />
                 </div>
-                <div>
+                <div className="space-y-4">
                   <Select 
                     value={taskType} 
                     onValueChange={setTaskType}
@@ -99,6 +103,20 @@ const Tasks = () => {
                       <SelectItem value="optional">Optional Task</SelectItem>
                     </SelectContent>
                   </Select>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="daily"
+                      checked={isDaily}
+                      onCheckedChange={(checked) => setIsDaily(checked as boolean)}
+                    />
+                    <label
+                      htmlFor="daily"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Daily task (resets at midnight)
+                    </label>
+                  </div>
                 </div>
                 <div className="flex justify-end space-x-4">
                   <Button 
@@ -109,6 +127,7 @@ const Tasks = () => {
                       setNewTaskTitle("");
                       setNewTaskDescription("");
                       setTaskType("must-do");
+                      setIsDaily(false);
                     }}
                   >
                     Cancel
@@ -142,13 +161,21 @@ const Tasks = () => {
                             }`}>
                               {task.title}
                             </h3>
-                            <span className={`text-xs px-2 py-1 rounded-full ${
-                              task.type === "must-do" 
-                                ? "bg-red-100 text-red-700" 
-                                : "bg-blue-100 text-blue-700"
-                            }`}>
-                              {task.type === "must-do" ? "Must-Do" : "Optional"}
-                            </span>
+                            <div className="flex gap-2">
+                              <span className={`text-xs px-2 py-1 rounded-full ${
+                                task.type === "must-do" 
+                                  ? "bg-red-100 text-red-700" 
+                                  : "bg-blue-100 text-blue-700"
+                              }`}>
+                                {task.type === "must-do" ? "Must-Do" : "Optional"}
+                              </span>
+                              {task.is_daily && (
+                                <span className="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-700 flex items-center gap-1">
+                                  <RotateCcw className="w-3 h-3" />
+                                  Daily
+                                </span>
+                              )}
+                            </div>
                           </div>
                           {task.description && (
                             <p className={`mt-1 text-sm ${
