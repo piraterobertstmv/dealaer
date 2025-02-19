@@ -7,11 +7,19 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Tasks = () => {
   const { tasks, createTask, updateTask, toggleTask, isLoading } = useTasks();
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [newTaskDescription, setNewTaskDescription] = useState("");
+  const [taskType, setTaskType] = useState<string>("must-do");
   const [isCreating, setIsCreating] = useState(false);
 
   const handleCreateTask = async (e: React.FormEvent) => {
@@ -25,9 +33,11 @@ const Tasks = () => {
       await createTask.mutateAsync({
         title: newTaskTitle.trim(),
         description: newTaskDescription.trim(),
+        type: taskType,
       });
       setNewTaskTitle("");
       setNewTaskDescription("");
+      setTaskType("must-do");
       setIsCreating(false);
     } catch (error) {
       console.error("Failed to create task:", error);
@@ -76,6 +86,20 @@ const Tasks = () => {
                     className="w-full"
                   />
                 </div>
+                <div>
+                  <Select 
+                    value={taskType} 
+                    onValueChange={setTaskType}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select task type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="must-do">Must-Do Task</SelectItem>
+                      <SelectItem value="optional">Optional Task</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="flex justify-end space-x-4">
                   <Button 
                     type="button" 
@@ -84,6 +108,7 @@ const Tasks = () => {
                       setIsCreating(false);
                       setNewTaskTitle("");
                       setNewTaskDescription("");
+                      setTaskType("must-do");
                     }}
                   >
                     Cancel
@@ -111,11 +136,20 @@ const Tasks = () => {
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <h3 className={`text-lg font-medium ${
-                            task.completed ? "text-gray-500 line-through" : "text-gray-900"
-                          }`}>
-                            {task.title}
-                          </h3>
+                          <div className="flex items-center gap-2">
+                            <h3 className={`text-lg font-medium ${
+                              task.completed ? "text-gray-500 line-through" : "text-gray-900"
+                            }`}>
+                              {task.title}
+                            </h3>
+                            <span className={`text-xs px-2 py-1 rounded-full ${
+                              task.type === "must-do" 
+                                ? "bg-red-100 text-red-700" 
+                                : "bg-blue-100 text-blue-700"
+                            }`}>
+                              {task.type === "must-do" ? "Must-Do" : "Optional"}
+                            </span>
+                          </div>
                           {task.description && (
                             <p className={`mt-1 text-sm ${
                               task.completed ? "text-gray-400" : "text-gray-500"
