@@ -1,28 +1,13 @@
 
 import { CheckCircle2, Circle, Lock, Unlock } from "lucide-react";
 import { Button } from "../ui/button";
-
-type Task = {
-  id: string;
-  title: string;
-  completed: boolean;
-  type: "must-do" | "optional";
-};
-
-// Temporary mock data
-const mockTasks: Task[] = [
-  { id: "1", title: "Complete project proposal", completed: false, type: "must-do" },
-  { id: "2", title: "Team meeting at 2 PM", completed: true, type: "must-do" },
-  { id: "3", title: "Review code changes", completed: false, type: "must-do" },
-  { id: "4", title: "Coffee break", completed: false, type: "optional" },
-  { id: "5", title: "Read article on productivity", completed: false, type: "optional" },
-];
+import { useTasks } from "@/hooks/useTasks";
 
 export const TaskOverview = () => {
-  const mustDoTasks = mockTasks.filter(task => task.type === "must-do");
-  const optionalTasks = mockTasks.filter(task => task.type === "optional");
-  const completedMustDo = mustDoTasks.filter(task => task.completed).length;
-  const progress = (completedMustDo / mustDoTasks.length) * 100;
+  const { tasks, toggleTask, stats } = useTasks();
+  const mustDoTasks = tasks.filter(task => task.type === "must-do");
+  const optionalTasks = tasks.filter(task => task.type === "optional");
+  const progress = stats.completedMustDoTasks / stats.mustDoTasks * 100 || 0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -31,11 +16,16 @@ export const TaskOverview = () => {
         <div className="space-y-4">
           {mustDoTasks.map(task => (
             <div key={task.id} className="flex items-center space-x-3">
-              {task.completed ? (
-                <CheckCircle2 className="h-5 w-5 text-green-500" />
-              ) : (
-                <Circle className="h-5 w-5 text-gray-300" />
-              )}
+              <button 
+                onClick={() => toggleTask.mutate(task.id)}
+                className="focus:outline-none"
+              >
+                {task.completed ? (
+                  <CheckCircle2 className="h-5 w-5 text-green-500" />
+                ) : (
+                  <Circle className="h-5 w-5 text-gray-300" />
+                )}
+              </button>
               <span className={`${task.completed ? "line-through text-gray-500" : "text-gray-900"}`}>
                 {task.title}
               </span>
@@ -73,8 +63,20 @@ export const TaskOverview = () => {
           {optionalTasks.map(task => (
             <div key={task.id} className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <Circle className="h-5 w-5 text-gray-300" />
-                <span className="text-gray-900">{task.title}</span>
+                <button 
+                  onClick={() => toggleTask.mutate(task.id)}
+                  className="focus:outline-none"
+                  disabled={progress < 60}
+                >
+                  {task.completed ? (
+                    <CheckCircle2 className="h-5 w-5 text-green-500" />
+                  ) : (
+                    <Circle className="h-5 w-5 text-gray-300" />
+                  )}
+                </button>
+                <span className={`${task.completed ? "line-through text-gray-500" : "text-gray-900"}`}>
+                  {task.title}
+                </span>
               </div>
               <Button
                 variant="outline"
