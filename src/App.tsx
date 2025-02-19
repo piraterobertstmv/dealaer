@@ -11,6 +11,9 @@ import { AuthLayout } from "@/components/AuthLayout";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import Tasks from "./pages/dashboard/Tasks";
+import Progress from "./pages/dashboard/Progress";
+import Settings from "./pages/dashboard/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,6 +50,9 @@ const App = () => {
               <Route path="/auth" element={<Auth />} />
               <Route element={<AuthLayout />}>
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/dashboard/tasks" element={<Tasks />} />
+                <Route path="/dashboard/progress" element={<Progress />} />
+                <Route path="/dashboard/settings" element={<Settings />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
