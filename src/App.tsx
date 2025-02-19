@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import { AuthContext } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthLayout } from "@/components/AuthLayout";
-import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -38,19 +37,6 @@ function App() {
       setLoading(false);
     });
 
-    // Register service worker
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
-          .then(registration => {
-            console.log('SW registered:', registration);
-          })
-          .catch(error => {
-            console.log('SW registration failed:', error);
-          });
-      });
-    }
-
     return () => subscription.unsubscribe();
   }, []);
 
@@ -72,7 +58,6 @@ function App() {
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
-            <PWAInstallPrompt />
           </BrowserRouter>
         </TooltipProvider>
       </AuthContext.Provider>
